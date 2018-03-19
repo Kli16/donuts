@@ -3,10 +3,43 @@ from matrix import *
 from math import *
 
 def add_box( points, x, y, z, width, height, depth ):
-    pass
+    add_edge(points, x, y, z, x, y - height, z)
+    add_edge(points, x, y - height, z, x + width, y - height, z)
+    add_edge(points, x + width, y - height, z, x + width, y, z)
+    add_edge(points, x + width, y, z, x, y, z)
+    #fsfe
+    add_edge(points, x, y, z, x, y, z - depth)
+    add_edge(points, x + width, y, z, x + width, y, z - depth)
+    add_edge(points, x + width, y - height, z, x + width, y - height, z - depth)
+    add_edge(points, x, y - height, z, x, y - height, z - depth)
+    #fsefef
+    add_edge(points, x, y, z - depth, x, y - height, z - depth)
+    add_edge(points, x, y - height, z - depth, x + width, y - height, z - depth)
+    add_edge(points, x + width, y - height, z - depth, x + width, y, z - depth)
+    add_edge(points, x + width, y, z - depth, x, y, z - depth)
 
 def add_sphere( points, cx, cy, cz, r, step ):
-    pass
+    x0 = r + cx
+    y0 = cy
+    z0 = cz
+    i = 1
+    while i <= step:
+        t1 = float(i)/step
+        while i <= step:
+            t = float(i)/step
+            x1 = r * math.cos(math.pi * t) + cx;
+            y1 = r * math.sin(math.pi * t) * math.cos(2*math.pi * t) + cy;
+
+            add_edge(points, x0, y0, z0, x1, y1, z0)
+            x0 = x1
+            y0 = y1
+            i+= 1
+        x0 = r + cx
+        y0 = cy
+        z0 = r * math.sin(math.pi * t1) * math.sin(2*math.pi * t1) + cz;
+        i+= 1
+
+
 def generate_sphere( points, cx, cy, cz, r, step ):
     pass
 
@@ -49,23 +82,23 @@ def draw_lines( matrix, screen, color ):
     if len(matrix) < 2:
         print 'Need at least 2 points to draw'
         return
-    
+
     point = 0
     while point < len(matrix) - 1:
         draw_line( int(matrix[point][0]),
                    int(matrix[point][1]),
                    int(matrix[point+1][0]),
                    int(matrix[point+1][1]),
-                   screen, color)    
+                   screen, color)
         point+= 2
-        
+
 def add_edge( matrix, x0, y0, z0, x1, y1, z1 ):
     add_point(matrix, x0, y0, z0)
     add_point(matrix, x1, y1, z1)
-    
+
 def add_point( matrix, x, y, z=0 ):
     matrix.append( [x, y, z, 1] )
-    
+
 
 
 
@@ -89,7 +122,7 @@ def draw_line( x0, y0, x1, y1, screen, color ):
     if ( abs(x1-x0) >= abs(y1 - y0) ):
 
         #octant 1
-        if A > 0:            
+        if A > 0:
             d = A + B/2
 
             while x < x1:
