@@ -19,34 +19,39 @@ def add_box( points, x, y, z, width, height, depth ):
     add_edge(points, x + width, y, z - depth, x, y, z - depth)
 
 def add_sphere( points, cx, cy, cz, r, step ):
-    x0 = r + cx
-    y0 = cy
-    z0 = cz
-    i = 1
-    while i <= step:
-        t1 = float(i)/step
-        while i <= step:
-            t = float(i)/step
-            x1 = r * math.cos(math.pi * t) + cx;
-            y1 = r * math.sin(math.pi * t) * math.cos(2*math.pi * t) + cy;
-
-            add_edge(points, x0, y0, z0, x1, y1, z0)
-            x0 = x1
-            y0 = y1
-            i+= 1
-        x0 = r + cx
-        y0 = cy
-        z0 = r * math.sin(math.pi * t1) * math.sin(2*math.pi * t1) + cz;
-        i+= 1
+    pts = generate_sphere(points, cx, cy, cz, r, step)
+    for i in pts:
+        add_edge(points, i[0], i[1], i[2], i[0]+1, i[1]+1, i[2]+1)
 
 
 def generate_sphere( points, cx, cy, cz, r, step ):
-    pass
+    points = []
+    for n in range(step + 1):
+        phi = (float(n) / step) * math.pi * 2
+        for i in range(step + 1):
+            theta = (float(i) / step) * math.pi
+            x = r * math.cos(theta) + cx
+            y = r * math.sin(theta) * math.cos(phi) + cy
+            z = r * math.sin(theta) * math.sin(phi) + cz
+            add_point(points, x, y, z)
+    return points
 
 def add_torus( points, cx, cy, cz, r0, r1, step ):
-    pass
+    pts = generate_torus(points, cx, cy, cz, r0, r1, step)
+    for i in pts:
+        add_edge(points, i[0], i[1], i[2], i[0]+1, i[1]+1, i[2]+1)
+
 def generate_torus( points, cx, cy, cz, r0, r1, step ):
-    pass
+    points = []
+    for i in range(step + 1):
+        phi = (float(i) / step) * math.pi * 2
+        for n in range(step + 1):
+            theta = (float(n) / step) * math.pi * 2
+            x = math.cos(phi) * ( r0 * math.cos(theta) + r1) + cx
+            y = r0 * math.sin(theta) + cy
+            z = math.sin(phi) * ( r0 * math.cos(theta) + r1) + cz
+            add_point(points, x, y, z)
+    return points
 
 def add_circle( points, cx, cy, cz, r, step ):
     x0 = r + cx
